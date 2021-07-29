@@ -61,7 +61,7 @@ def lo(r):
 
 def LO(r):
     r = re.sub('%r([a-z]+)', r'%e\1', r)
-    r = re.sub('%r([0-9]+)', r'/%r\1d', r)
+    r = re.sub('%r([0-9]+)', r'%r\1d', r)
     return r
 
 def _data_word(*entries):
@@ -1181,18 +1181,32 @@ def dectransform(prefetch):
 	xor	{LO(tp80)},{LO(acc0)}
 	shr	$32,{tp28}
 	xor	{LO(tp88)},{LO(acc8)}
-
-	`"mov	0({sbox}),{mask80}"	if ($prefetch)`
+'''
+    if prefetch:
+        code += f"mov	0({sbox}),{mask80}"
+    code += f'''
 	rol	$16,{LO(tp40)}	# ROTATE(tp4^tp1^tp8,16)
-	`"mov	64({sbox}),{maskfe}"	if ($prefetch)`
+'''
+    if prefetch:
+        code += f"mov	64({sbox}),{maskfe}"
+    code += f'''
 	rol	$16,{LO(tp48)}	# ROTATE(tp4^tp1^tp8,16)
-	`"mov	128({sbox}),{mask1b}"	if ($prefetch)`
+'''
+    if prefetch:
+        code += f"mov	128({sbox}),{mask1b}"
+    code += f'''
 	rol	$16,{LO(tp20)}	# ROTATE(tp4^tp1^tp8,16)
-	`"mov	192({sbox}),{tp80}"	if ($prefetch)`
+'''
+    if prefetch:
+        code += f"mov	192({sbox}),{tp80}"
+    code += f'''
 	xor	{LO(tp40)},{LO(tp10)}
 	rol	$16,{LO(tp28)}	# ROTATE(tp4^tp1^tp8,16)
 	xor	{LO(tp48)},{LO(tp18)}
-	`"mov	256({sbox}),{tp88}"	if ($prefetch)`
+'''
+    if prefetch:
+        code += f"mov	256({sbox}),{tp88}"
+    code += f'''
 	xor	{LO(tp20)},{LO(acc0)}
 	xor	{LO(tp28)},{LO(acc8)}
 '''
@@ -1657,7 +1671,7 @@ def deckey_ref(i, ptr, te, td):
 
 # int AES_set_decrypt_key(const unsigned char *userKey, const int bits,
 #                        AES_KEY *key)
-code+='''
+code += f'''
 .globl	AES_set_decrypt_key
 .type	AES_set_decrypt_key,@function,3
 .align	16
@@ -1722,7 +1736,7 @@ AES_set_decrypt_key:
 
 dectransform(False)
 
-code+='''
+code += f'''
 		mov	%eax,0({key})
 		mov	%ebx,4({key})
 		mov	%ecx,8({key})
@@ -1770,7 +1784,7 @@ ivec="64(%rsp)"		# ivec[16]
 aes_key="80(%rsp)"		# copy of aes_key
 mark="80+240(%rsp)"	# copy of aes_key->rounds
 
-code+='''
+code += f'''
 .globl	AES_cbc_encrypt
 .type	AES_cbc_encrypt,@function,6
 .align	16
@@ -1811,7 +1825,7 @@ AES_cbc_encrypt:
 
 .cfi_remember_state
 	mov	OPENSSL_ia32cap_P(%rip),%r10d
-	cmp	$$speed_limit,%rdx
+	cmp	${speed_limit},%rdx
 	jb	.Lcbc_slow_prologue
 	test	$15,%rdx
 	jnz	.Lcbc_slow_prologue
@@ -1846,15 +1860,15 @@ AES_cbc_encrypt:
 	xchg	%rsp,{key}
 .cfi_def_cfa_register	{key}
 	#add	$8,%rsp	# reserve for return address!
-	mov	{key},$_rsp	# save %rsp
-.cfi_cfa_expression	$_rsp,deref,+64
+	mov	{key},{_rsp}	# save %rsp
+.cfi_cfa_expression	{_rsp},deref,+64
 .Lcbc_fast_body:
-	mov	%rdi,$_inp	# save copy of inp
-	mov	%rsi,$_out	# save copy of out
-	mov	%rdx,$_len	# save copy of len
-	mov	%rcx,$_key	# save copy of key
-	mov	%r8,$_ivp	# save copy of ivp
-	movl	$0,$mark	# copy of aes_key->rounds = 0;
+	mov	%rdi,{_inp}	# save copy of inp
+	mov	%rsi,{_out}	# save copy of out
+	mov	%rdx,{_len}	# save copy of len
+	mov	%rcx,{_key}	# save copy of key
+	mov	%r8,{_ivp}	# save copy of ivp
+	movl	$0,{mark}	# copy of aes_key->rounds = 0;
 	mov	%r8,%rbp	# rearrange input arguments
 	mov	%r9,%rbx
 	mov	%rsi,{out}
@@ -2033,7 +2047,7 @@ AES_cbc_encrypt:
 
 .align	4
 .Lcbc_fast_cleanup:
-	cmpl	$0,$mark	# was the key schedule copied?
+	cmpl	$0,{mark}	# was the key schedule copied?
 	lea	$aes_key,%rdi
 	je	.Lcbc_exit
 		mov	$240/8,%ecx
@@ -2463,13 +2477,13 @@ data_byte(0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68)
 data_byte(0x41, 0x99, 0x2d, 0x0f, 0xb0, 0x54, 0xbb, 0x16)
 
 #rcon:
-code+='''
+code += f'''
 	.long	0x00000001, 0x00000002, 0x00000004, 0x00000008
 	.long	0x00000010, 0x00000020, 0x00000040, 0x00000080
 	.long	0x0000001b, 0x00000036, 0x80808080, 0x80808080
 	.long	0xfefefefe, 0xfefefefe, 0x1b1b1b1b, 0x1b1b1b1b
 '''
-code+='''
+code += f'''
 .align	64
 .LAES_Td:
 '''
@@ -2572,7 +2586,7 @@ data_byte(0xc8, 0xeb, 0xbb, 0x3c, 0x83, 0x53, 0x99, 0x61)
 data_byte(0x17, 0x2b, 0x04, 0x7e, 0xba, 0x77, 0xd6, 0x26)
 data_byte(0xe1, 0x69, 0x14, 0x63, 0x55, 0x21, 0x0c, 0x7d)
 
-code+='''
+code += f'''
 	.long	0x80808080, 0x80808080, 0xfefefefe, 0xfefefefe
 	.long	0x1b1b1b1b, 0x1b1b1b1b, 0, 0
 '''
@@ -2608,7 +2622,7 @@ data_byte(0xa0, 0xe0, 0x3b, 0x4d, 0xae, 0x2a, 0xf5, 0xb0)
 data_byte(0xc8, 0xeb, 0xbb, 0x3c, 0x83, 0x53, 0x99, 0x61)
 data_byte(0x17, 0x2b, 0x04, 0x7e, 0xba, 0x77, 0xd6, 0x26)
 data_byte(0xe1, 0x69, 0x14, 0x63, 0x55, 0x21, 0x0c, 0x7d)
-code+='''
+code += f'''
 	.long	0x80808080, 0x80808080, 0xfefefefe, 0xfefefefe
 	.long	0x1b1b1b1b, 0x1b1b1b1b, 0, 0
 '''
@@ -2644,7 +2658,7 @@ data_byte(0xa0, 0xe0, 0x3b, 0x4d, 0xae, 0x2a, 0xf5, 0xb0)
 data_byte(0xc8, 0xeb, 0xbb, 0x3c, 0x83, 0x53, 0x99, 0x61)
 data_byte(0x17, 0x2b, 0x04, 0x7e, 0xba, 0x77, 0xd6, 0x26)
 data_byte(0xe1, 0x69, 0x14, 0x63, 0x55, 0x21, 0x0c, 0x7d)
-code+='''
+code += f'''
 	.long	0x80808080, 0x80808080, 0xfefefefe, 0xfefefefe
 	.long	0x1b1b1b1b, 0x1b1b1b1b, 0, 0
 '''
@@ -2680,7 +2694,7 @@ data_byte(0xa0, 0xe0, 0x3b, 0x4d, 0xae, 0x2a, 0xf5, 0xb0)
 data_byte(0xc8, 0xeb, 0xbb, 0x3c, 0x83, 0x53, 0x99, 0x61)
 data_byte(0x17, 0x2b, 0x04, 0x7e, 0xba, 0x77, 0xd6, 0x26)
 data_byte(0xe1, 0x69, 0x14, 0x63, 0x55, 0x21, 0x0c, 0x7d)
-code+='''
+code += f'''
 	.long	0x80808080, 0x80808080, 0xfefefefe, 0xfefefefe
 	.long	0x1b1b1b1b, 0x1b1b1b1b, 0, 0
 .asciz  "AES for x86_64, CRYPTOGAMS by <appro@openssl.org>"
@@ -2695,7 +2709,7 @@ if win64:
     context="%r8"
     disp="%r9"
 
-    code+='''
+    code += f'''
 .extern	__imp_RtlVirtualUnwind
 .type	block_se_handler,@abi-omnipotent
 .align	16
