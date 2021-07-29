@@ -888,46 +888,55 @@ def decstep(i, *s):
     code+="\n";
 
 
-sub declast()
-{ my ($i,@s)=@_;
-  my $tmp0=$acc0;
-  my $tmp1=$acc1;
-  my $tmp2=$acc2;
-  my $out=($t0,$t1,$t2,$s[0])[$i];
+def declast(i, *s):
+    tmp0=acc0;
+    tmp1=acc1;
+    tmp2=acc2;
+    out=(t0,t1,t2,s[0])[i];
 
-	code+="	mov	$s[0],$out\n"		if ($i!=3);
-			$tmp1=$s[2]			if ($i==3);
-	code+="	mov	$s[2],$tmp1\n"		if ($i!=3);
-	code+="	and	\$0xFF,$out\n";
+    if i!=3:
+        code+="	mov	$s[0],$out\n"
+    else:
+        tmp1=s[2]			;
+    if i!=3:
+        code+="	mov	$s[2],$tmp1\n"
+        
+    code+="	and	\$0xFF,$out\n";
 
-	code+="	movzb	2048($sbox,$out,1),$out\n";
-	code+="	shr	\$16,$tmp1\n";
-			$tmp2=$s[3]			if ($i==3);
-	code+="	mov	$s[3],$tmp2\n"		if ($i!=3);
+    code+="	movzb	2048($sbox,$out,1),$out\n";
+    code+="	shr	\$16,$tmp1\n";
+    if i==3:
+        tmp2=s[3]			
+    else:
+        code+="	mov	$s[3],$tmp2\n"
 
-			$tmp0=$s[1]			if ($i==3);
-	code+="	movzb	".&hi($s[1]).",$tmp0\n";
-	code+="	and	\$0xFF,$tmp1\n";
-	code+="	shr	\$24,$tmp2\n";
+    if i==3:
+        tmp0=s[1]			
+    code+="	movzb	" + hi(s[1]) + ",$tmp0\n";
+    code+="	and	\$0xFF,$tmp1\n";
+    code+="	shr	\$24,$tmp2\n";
+    
+    code+="	movzb	2048($sbox,$tmp0,1),$tmp0\n";
+    code+="	movzb	2048($sbox,$tmp1,1),$tmp1\n";
+    code+="	movzb	2048($sbox,$tmp2,1),$tmp2\n";
 
-	code+="	movzb	2048($sbox,$tmp0,1),$tmp0\n";
-	code+="	movzb	2048($sbox,$tmp1,1),$tmp1\n";
-	code+="	movzb	2048($sbox,$tmp2,1),$tmp2\n";
+    code+="	shl	\$8,$tmp0\n";
+    code+="	shl	\$16,$tmp1\n";
+    code+="	shl	\$24,$tmp2\n";
 
-	code+="	shl	\$8,$tmp0\n";
-	code+="	shl	\$16,$tmp1\n";
-	code+="	shl	\$24,$tmp2\n";
+    code+="	xor	$tmp0,$out\n";
+    if i==3:
+        code+="	mov	$t2,$s[1]\n"		
+    code+="	xor	$tmp1,$out\n";
+    if i==3:
+        code+="	mov	$t1,$s[2]\n"		
+    code+="	xor	$tmp2,$out\n";
+    if i==3:
+        code+="	mov	$t0,$s[3]\n"		
+    code+="\n";
 
-	code+="	xor	$tmp0,$out\n";
-	code+="	mov	$t2,$s[1]\n"		if ($i==3);
-	code+="	xor	$tmp1,$out\n";
-	code+="	mov	$t1,$s[2]\n"		if ($i==3);
-	code+="	xor	$tmp2,$out\n";
-	code+="	mov	$t0,$s[3]\n"		if ($i==3);
-	code+="\n";
-}
 
-code+=<<___;
+code+='''
 .type	_x86_64_AES_decrypt,\@abi-omnipotent
 .align	16
 _x86_64_AES_decrypt:
@@ -942,46 +951,50 @@ _x86_64_AES_decrypt:
 	jmp	.Ldec_loop
 .align	16
 .Ldec_loop:
-___
-	if ($verticalspin) { &decvert(); }
-	else {	&decstep(0,$s0,$s3,$s2,$s1);
-		&decstep(1,$s1,$s0,$s3,$s2);
-		&decstep(2,$s2,$s1,$s0,$s3);
-		&decstep(3,$s3,$s2,$s1,$s0);
-		code+=<<___;
+'''
+if verticalspin:
+    decvert()
+else:
+    decstep(0,s0,s3,s2,s1);
+    decstep(1,s1,s0,s3,s2);
+    decstep(2,s2,s1,s0,s3);
+    decstep(3,s3,s2,s1,s0);
+    code+='''
 		lea	16($key),$key
 		xor	0($key),$s0			# xor with key
 		xor	4($key),$s1
 		xor	8($key),$s2
 		xor	12($key),$s3
-___
-	}
-code+=<<___;
+'''
+
+code+='''
 	sub	\$1,$rnds
 	jnz	.Ldec_loop
-___
-	if ($verticalspin) { &declastvert(); }
-	else {	&declast(0,$s0,$s3,$s2,$s1);
-		&declast(1,$s1,$s0,$s3,$s2);
-		&declast(2,$s2,$s1,$s0,$s3);
-		&declast(3,$s3,$s2,$s1,$s0);
-		code+=<<___;
+'''
+if verticalspin:
+    declastvert()
+else:
+    declast(0,s0,s3,s2,s1);
+    declast(1,s1,s0,s3,s2);
+    declast(2,s2,s1,s0,s3);
+    declast(3,s3,s2,s1,s0);
+    code+='''
 		xor	16+0($key),$s0			# xor with key
 		xor	16+4($key),$s1
 		xor	16+8($key),$s2
 		xor	16+12($key),$s3
-___
-	}
-code+=<<___;
+'''
+	
+code+='''
 	.byte	0xf3,0xc3			# rep ret
 .cfi_endproc
 .size	_x86_64_AES_decrypt,.-_x86_64_AES_decrypt
-___
+'''
 
 sub deccompactvert()
 { my ($t3,$t4,$t5)=("%r8d","%r9d","%r13d");
 
-code+=<<___;
+code+='''
 	movzb	{lo(s0)},$t0
 	movzb	{lo(s1)},$t1
 	movzb	{lo(s2)},$t2
@@ -1050,7 +1063,7 @@ code+=<<___;
 	xor	$t1,$s1
 	xor	$t2,$s2
 	xor	$t3,$s3
-___
+'''
 }
 
 # parallelized version! input is pair of 64-bit values: %rax=s1.s0
@@ -1061,7 +1074,7 @@ sub dectransform()
   my ($tp18,$tp28,$tp48,$tp88,$acc8)=("%rcx","%r11","%r12","%r13","%rdx");
   my $prefetch = shift;
 
-code+=<<___;
+code+='''
 	mov	$mask80,$tp40
 	mov	$mask80,$tp48
 	and	$tp10,$tp40
@@ -1179,10 +1192,10 @@ code+=<<___;
 	`"mov	256($sbox),$tp88"	if ($prefetch)`
 	xor	{LO(tp20)},{LO(acc0)}
 	xor	{LO(tp28)},{LO(acc8)}
-___
+'''
 }
 
-code+=<<___;
+code+='''
 .type	_x86_64_AES_decrypt_compact,\@abi-omnipotent
 .align	16
 _x86_64_AES_decrypt_compact:
@@ -1205,9 +1218,9 @@ _x86_64_AES_decrypt_compact:
 		xor	8($key),$s2
 		xor	12($key),$s3
 		lea	16($key),$key
-___
+'''
 		&deccompactvert();
-code+=<<___;
+code+='''
 		cmp	16(%rsp),$key
 		je	.Ldec_compact_done
 
@@ -1218,9 +1231,9 @@ code+=<<___;
 		or	%rbx,%rax
 		or	%rdx,%rcx
 		mov	256+16($sbox),$mask1b
-___
+'''
 		&dectransform(1);
-code+=<<___;
+code+='''
 	jmp	.Ldec_loop_compact
 .align	16
 .Ldec_compact_done:
@@ -1231,10 +1244,10 @@ code+=<<___;
 	.byte	0xf3,0xc3			# rep ret
 .cfi_endproc
 .size	_x86_64_AES_decrypt_compact,.-_x86_64_AES_decrypt_compact
-___
+'''
 
 # void AES_decrypt (const void *inp,void *out,const AES_KEY *key);
-code+=<<___;
+code+='''
 .globl	AES_decrypt
 .type	AES_decrypt,\@function,3
 .align	16
@@ -1323,12 +1336,12 @@ AES_decrypt:
 	ret
 .cfi_endproc
 .size	AES_decrypt,.-AES_decrypt
-___
+'''
 #------------------------------------------------------------------#
 
 sub enckey()
 {
-code+=<<___;
+code+='''
 	movz	%dl,%esi		# rk[i]>>0
 	movzb	-128(%rbp,%rsi),%ebx
 	movz	%dh,%esi		# rk[i]>>8
@@ -1350,12 +1363,12 @@ code+=<<___;
 	xor	%ebx,%eax
 
 	xor	1024-128(%rbp,%rcx,4),%eax		# rcon
-___
+'''
 }
 
 # int AES_set_encrypt_key(const unsigned char *userKey, const int bits,
 #                        AES_KEY *key)
-code+=<<___;
+code+='''
 .globl	AES_set_encrypt_key
 .type	AES_set_encrypt_key,\@function,3
 .align	16
@@ -1440,9 +1453,9 @@ _x86_64_AES_set_encrypt_key:
 		mov	0(%rdi),%eax			# rk[0]
 		mov	12(%rdi),%edx			# rk[3]
 .L10shortcut:
-___
+'''
 		&enckey	();
-code+=<<___;
+code+='''
 		mov	%eax,16(%rdi)			# rk[4]
 		xor	4(%rdi),%eax
 		mov	%eax,20(%rdi)			# rk[5]
@@ -1475,9 +1488,9 @@ code+=<<___;
 		mov	0(%rdi),%eax			# rk[0]
 		mov	20(%rdi),%edx			# rk[5]
 .L12shortcut:
-___
+'''
 		&enckey	();
-code+=<<___;
+code+='''
 		mov	%eax,24(%rdi)			# rk[6]
 		xor	4(%rdi),%eax
 		mov	%eax,28(%rdi)			# rk[7]
@@ -1520,9 +1533,9 @@ code+=<<___;
 		mov	0(%rdi),%eax			# rk[0]
 		mov	28(%rdi),%edx			# rk[4]
 .L14shortcut:
-___
+'''
 		&enckey	();
-code+=<<___;
+code+='''
 		mov	%eax,32(%rdi)			# rk[8]
 		xor	4(%rdi),%eax
 		mov	%eax,36(%rdi)			# rk[9]
@@ -1578,12 +1591,12 @@ code+=<<___;
 	.byte	0xf3,0xc3			# rep ret
 .cfi_endproc
 .size	_x86_64_AES_set_encrypt_key,.-_x86_64_AES_set_encrypt_key
-___
+'''
 
 sub deckey_ref()
 { my ($i,$ptr,$te,$td) = @_;
   my ($tp1,$tp2,$tp4,$tp8,$acc)=("%eax","%ebx","%edi","%edx","%r8d");
-code+=<<___;
+code+='''
 	mov	$i($ptr),$tp1
 	mov	$tp1,$acc
 	and	\$0x80808080,$acc
@@ -1631,12 +1644,12 @@ code+=<<___;
 	xor	$tp4,$tp1
 
 	mov	$tp1,$i($ptr)
-___
+'''
 }
 
 # int AES_set_decrypt_key(const unsigned char *userKey, const int bits,
 #                        AES_KEY *key)
-code+=<<___;
+code+='''
 .globl	AES_set_decrypt_key
 .type	AES_set_decrypt_key,\@function,3
 .align	16
@@ -1697,9 +1710,9 @@ AES_set_decrypt_key:
 		lea	16($key),$key
 		mov	0($key),%rax
 		mov	8($key),%rcx
-___
+'''
 		&dectransform ();
-code+=<<___;
+code+='''
 		mov	%eax,0($key)
 		mov	%ebx,4($key)
 		mov	%ecx,8($key)
@@ -1727,7 +1740,7 @@ code+=<<___;
 	ret
 .cfi_endproc
 .size	AES_set_decrypt_key,.-AES_set_decrypt_key
-___
+'''
 
 # void AES_cbc_encrypt (const void char *inp, unsigned char *out,
 #			size_t length, const AES_KEY *key,
@@ -1747,7 +1760,7 @@ my $ivec="64(%rsp)";		# ivec[16]
 my $aes_key="80(%rsp)";		# copy of aes_key
 my $mark="80+240(%rsp)";	# copy of aes_key->rounds
 
-code+=<<___;
+code+='''
 .globl	AES_cbc_encrypt
 .type	AES_cbc_encrypt,\@function,6
 .align	16
@@ -2233,7 +2246,7 @@ AES_cbc_encrypt:
 	ret
 .cfi_endproc
 .size	AES_cbc_encrypt,.-AES_cbc_encrypt
-___
+'''
 }
 
 code += '''
@@ -2440,16 +2453,16 @@ data_byte(0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68)
 data_byte(0x41, 0x99, 0x2d, 0x0f, 0xb0, 0x54, 0xbb, 0x16)
 
 #rcon:
-code+=<<___
+code+='''
 	.long	0x00000001, 0x00000002, 0x00000004, 0x00000008
 	.long	0x00000010, 0x00000020, 0x00000040, 0x00000080
 	.long	0x0000001b, 0x00000036, 0x80808080, 0x80808080
 	.long	0xfefefefe, 0xfefefefe, 0x1b1b1b1b, 0x1b1b1b1b
-___
-code+=<<___
+'''
+code+='''
 .align	64
 .LAES_Td:
-___
+'''
 _data_word(0x50a7f451, 0x5365417e, 0xc3a4171a, 0x965e273a)
 _data_word(0xcb6bab3b, 0xf1459d1f, 0xab58faac, 0x9303e34b)
 _data_word(0x55fa3020, 0xf66d76ad, 0x9176cc88, 0x254c02f5)
@@ -2549,10 +2562,10 @@ data_byte(0xc8, 0xeb, 0xbb, 0x3c, 0x83, 0x53, 0x99, 0x61)
 data_byte(0x17, 0x2b, 0x04, 0x7e, 0xba, 0x77, 0xd6, 0x26)
 data_byte(0xe1, 0x69, 0x14, 0x63, 0x55, 0x21, 0x0c, 0x7d)
 
-code+=<<___
+code+='''
 	.long	0x80808080, 0x80808080, 0xfefefefe, 0xfefefefe
 	.long	0x1b1b1b1b, 0x1b1b1b1b, 0, 0
-___
+'''
 	&data_byte(0x52, 0x09, 0x6a, 0xd5, 0x30, 0x36, 0xa5, 0x38)
 	&data_byte(0xbf, 0x40, 0xa3, 0x9e, 0x81, 0xf3, 0xd7, 0xfb)
 	&data_byte(0x7c, 0xe3, 0x39, 0x82, 0x9b, 0x2f, 0xff, 0x87)
@@ -2585,10 +2598,10 @@ ___
 	&data_byte(0xc8, 0xeb, 0xbb, 0x3c, 0x83, 0x53, 0x99, 0x61)
 	&data_byte(0x17, 0x2b, 0x04, 0x7e, 0xba, 0x77, 0xd6, 0x26)
 	&data_byte(0xe1, 0x69, 0x14, 0x63, 0x55, 0x21, 0x0c, 0x7d)
-code+=<<___
+code+='''
 	.long	0x80808080, 0x80808080, 0xfefefefe, 0xfefefefe
 	.long	0x1b1b1b1b, 0x1b1b1b1b, 0, 0
-___
+'''
 	&data_byte(0x52, 0x09, 0x6a, 0xd5, 0x30, 0x36, 0xa5, 0x38)
 	&data_byte(0xbf, 0x40, 0xa3, 0x9e, 0x81, 0xf3, 0xd7, 0xfb)
 	&data_byte(0x7c, 0xe3, 0x39, 0x82, 0x9b, 0x2f, 0xff, 0x87)
@@ -2621,10 +2634,10 @@ ___
 	&data_byte(0xc8, 0xeb, 0xbb, 0x3c, 0x83, 0x53, 0x99, 0x61)
 	&data_byte(0x17, 0x2b, 0x04, 0x7e, 0xba, 0x77, 0xd6, 0x26)
 	&data_byte(0xe1, 0x69, 0x14, 0x63, 0x55, 0x21, 0x0c, 0x7d)
-code+=<<___
+code+='''
 	.long	0x80808080, 0x80808080, 0xfefefefe, 0xfefefefe
 	.long	0x1b1b1b1b, 0x1b1b1b1b, 0, 0
-___
+'''
 	&data_byte(0x52, 0x09, 0x6a, 0xd5, 0x30, 0x36, 0xa5, 0x38)
 	&data_byte(0xbf, 0x40, 0xa3, 0x9e, 0x81, 0xf3, 0xd7, 0xfb)
 	&data_byte(0x7c, 0xe3, 0x39, 0x82, 0x9b, 0x2f, 0xff, 0x87)
@@ -2657,12 +2670,12 @@ ___
 	&data_byte(0xc8, 0xeb, 0xbb, 0x3c, 0x83, 0x53, 0x99, 0x61)
 	&data_byte(0x17, 0x2b, 0x04, 0x7e, 0xba, 0x77, 0xd6, 0x26)
 	&data_byte(0xe1, 0x69, 0x14, 0x63, 0x55, 0x21, 0x0c, 0x7d)
-code+=<<___
+code+='''
 	.long	0x80808080, 0x80808080, 0xfefefefe, 0xfefefefe
 	.long	0x1b1b1b1b, 0x1b1b1b1b, 0, 0
 .asciz  "AES for x86_64, CRYPTOGAMS by <appro\@openssl.org>"
 .align	64
-___
+'''
 
 # EXCEPTION_DISPOSITION handler (EXCEPTION_RECORD *rec,ULONG64 frame,
 #		CONTEXT *context,DISPATCHER_CONTEXT *disp)
@@ -2672,7 +2685,7 @@ $frame="%rdx"
 $context="%r8"
 $disp="%r9"
 
-code+=<<___
+code+='''
 .extern	__imp_RtlVirtualUnwind
 .type	block_se_handler,\@abi-omnipotent
 .align	16
@@ -2936,8 +2949,8 @@ cbc_se_handler:
 .LSEH_info_AES_cbc_encrypt:
 	.byte	9,0,0,0
 	.rva	cbc_se_handler
-___
-}
+'''
+
 
 #code += s/\`([^\`]*)\`/eval($1)/gem
 
