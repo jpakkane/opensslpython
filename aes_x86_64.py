@@ -155,86 +155,86 @@ def enclastvert():
 	movzb	{lo(s0)},{acc0}
 	movzb	{lo(s1)},{acc1}
 	movzb	{lo(s2)},{acc2}
-	movzb	2({sbox},{acc0},8),$t0
-	movzb	2({sbox},$acc1,8),$t1
-	movzb	2({sbox},$acc2,8),$t2
+	movzb	2({sbox},{acc0},8),{t0}
+	movzb	2({sbox},{acc1},8),{t1}
+	movzb	2({sbox},{acc2},8),{t2}
 
 	movzb	{lo(s3)},{acc0}
-	movzb	{hi(s1)},$acc1
-	movzb	{hi(s2)},$acc2
-	movzb	2({sbox},{acc0},8),$t3
-	mov	0({sbox},$acc1,8),$acc1	#$t0
-	mov	0({sbox},$acc2,8),$acc2	#$t1
+	movzb	{hi(s1)},{acc1}
+	movzb	{hi(s2)},{acc2}
+	movzb	2({sbox},{acc0},8),{t3}
+	mov	0({sbox},{acc1},8),{acc1}	#{t0}
+	mov	0({sbox},{acc2},8),{acc2}	#{t1}
 
-	and	\$0x0000ff00,$acc1
-	and	\$0x0000ff00,$acc2
+	and	$0x0000ff00,{acc1}
+	and	$0x0000ff00,{acc2}
 
-	xor	$acc1,$t0
-	xor	$acc2,$t1
-	shr	\$16,$s2
+	xor	{acc1},{t0}
+	xor	{acc2},{t1}
+	shr	$16,{s2}
 
 	movzb	{hi(s3)},{acc0}
-	movzb	{hi(s0)},$acc1
-	shr	\$16,$s3
-	mov	0({sbox},{acc0},8),{acc0}	#$t2
-	mov	0({sbox},$acc1,8),$acc1	#$t3
+	movzb	{hi(s0)},{acc1}
+	shr	$16,{s3}
+	mov	0({sbox},{acc0},8),{acc0}	#{t2}
+	mov	0({sbox},{acc1},8),{acc1}	#$t3
 
 	and	\$0x0000ff00,{acc0}
-	and	\$0x0000ff00,$acc1
+	and	\$0x0000ff00,{acc1}
 	shr	\$16,$s1
-	xor	{acc0},$t2
-	xor	$acc1,$t3
+	xor	{acc0},{t2}
+	xor	{acc1},{t3}
 	shr	\$16,$s0
 
 	movzb	{lo(s2)},{acc0}
-	movzb	{lo(s3)},$acc1
-	movzb	{lo(s0)},$acc2
-	mov	0({sbox},{acc0},8),{acc0}	#$t0
-	mov	0({sbox},$acc1,8),$acc1	#$t1
-	mov	0({sbox},$acc2,8),$acc2	#$t2
+	movzb	{lo(s3)},{acc1}
+	movzb	{lo(s0)},{acc2}
+	mov	0({sbox},{acc0},8),{acc0}	#{t0}
+	mov	0({sbox},{acc1},8),{acc1}	#$t1
+	mov	0({sbox},{acc2},8),{acc2}	#{t2}
 
 	and	\$0x00ff0000,{acc0}
-	and	\$0x00ff0000,$acc1
-	and	\$0x00ff0000,$acc2
+	and	\$0x00ff0000,{acc1}
+	and	\$0x00ff0000,{acc2}
 
-	xor	{acc0},$t0
-	xor	$acc1,$t1
-	xor	$acc2,$t2
+	xor	{acc0},{t0}
+	xor	{acc1},{t1}
+	xor	{acc2},{t2}
 
 	movzb	{lo(s1)},{acc0}
-	movzb	{hi(s3)},$acc1
-	movzb	{hi(s0)},$acc2
+	movzb	{hi(s3)},{acc1}
+	movzb	{hi(s0)},{acc2}
 	mov	0({sbox},{acc0},8),{acc0}	#$t3
-	mov	2({sbox},$acc1,8),$acc1	#$t0
-	mov	2({sbox},$acc2,8),$acc2	#$t1
+	mov	2({sbox},{acc1},8),{acc1}	#{t0}
+	mov	2({sbox},{acc2},8),{acc2}	#$t1
 
 	and	\$0x00ff0000,{acc0}
-	and	\$0xff000000,$acc1
-	and	\$0xff000000,$acc2
+	and	\$0xff000000,{acc1}
+	and	\$0xff000000,{acc2}
 
-	xor	{acc0},$t3
-	xor	$acc1,$t0
-	xor	$acc2,$t1
+	xor	{acc0},{t3}
+	xor	{acc1},{t0}
+	xor	{acc2},{t1}
 
 	movzb	{hi(s1)},{acc0}
-	movzb	{hi(s2)},$acc1
+	movzb	{hi(s2)},{acc1}
 	mov	16+12($key),$s3
-	mov	2({sbox},{acc0},8),{acc0}	#$t2
-	mov	2({sbox},$acc1,8),$acc1	#$t3
+	mov	2({sbox},{acc0},8),{acc0}	#{t2}
+	mov	2({sbox},{acc1},8),{acc1}	#$t3
 	mov	16+0($key),$s0
 
 	and	\$0xff000000,{acc0}
-	and	\$0xff000000,$acc1
+	and	\$0xff000000,{acc1}
 
-	xor	{acc0},$t2
-	xor	$acc1,$t3
+	xor	{acc0},{t2}
+	xor	{acc1},{t3}
 
 	mov	16+4($key),$s1
 	mov	16+8($key),$s2
-	xor	$t0,$s0
-	xor	$t1,$s1
-	xor	$t2,$s2
-	xor	$t3,$s3
+	xor	{t0},$s0
+	xor	{t1},$s1
+	xor	{t2},$s2
+	xor	{t3},$s3
 '''
 
 def encstep(i, *s):
@@ -315,13 +315,13 @@ def enclast(i, *s):
 
     code+="	xor	$tmp0,$out\n";
     if i==3:
-        code+="	mov	$t0,$s[1]\n"		
+        code+="	mov	{t0},$s[1]\n"		
     code+="	xor	$tmp1,$out\n";
     if i==3:
-        code+="	mov	$t1,$s[2]\n"		
+        code+="	mov	{t1},$s[2]\n"		
     code+="	xor	$tmp2,$out\n";
     if i==3:
-        code+="	mov	$t2,$s[3]\n"		;
+        code+="	mov	{t2},$s[3]\n"		;
     code+="\n";
 
 
@@ -390,66 +390,66 @@ def enccompactvert():
 	movzb	{hi(s1)},{acc0}
 	movzb	{hi(s2)},{acc1}
 	shr	$16,{s2}
-	movzb	{hi(s3)},$acc2
-	movzb	({sbox},$t0,1),$t0
-	movzb	({sbox},$t1,1),$t1
-	movzb	({sbox},$t2,1),$t2
-	movzb	({sbox},$t3,1),$t3
+	movzb	{hi(s3)},{acc2}
+	movzb	({sbox},{t0},1),{t0}
+	movzb	({sbox},{t1},1),{t1}
+	movzb	({sbox},{t2},1),{t2}
+	movzb	({sbox},{t3},1),{t3}
 
-	movzb	({sbox},{acc0},1),$t4	#$t0
+	movzb	({sbox},{acc0},1),$t4	#{t0}
 	movzb	{hi(s0)},{acc0}
-	movzb	({sbox},$acc1,1),$t5	#$t1
-	movzb	{lo(s2)},$acc1
-	movzb	({sbox},$acc2,1),$acc2	#$t2
+	movzb	({sbox},{acc1},1),$t5	#$t1
+	movzb	{lo(s2)},{acc1}
+	movzb	({sbox},{acc2},1),{acc2}	#{t2}
 	movzb	({sbox},{acc0},1),{acc0}	#$t3
 
 	shl	\$8,$t4
 	shr	\$16,$s3
 	shl	\$8,$t5
-	xor	$t4,$t0
+	xor	$t4,{t0}
 	shr	\$16,$s0
 	movzb	{lo(s3)},$t4
 	shr	\$16,$s1
-	xor	$t5,$t1
-	shl	\$8,$acc2
+	xor	$t5,{t1}
+	shl	\$8,{acc2}
 	movzb	{lo(s0)},$t5
-	movzb	({sbox},$acc1,1),$acc1	#$t0
-	xor	$acc2,$t2
+	movzb	({sbox},{acc1},1),{acc1}	#{t0}
+	xor	{acc2},{t2}
 
 	shl	\$8,{acc0}
-	movzb	{lo(s1)},$acc2
-	shl	\$16,$acc1
-	xor	{acc0},$t3
+	movzb	{lo(s1)},{acc2}
+	shl	\$16,{acc1}
+	xor	{acc0},{t3}
 	movzb	({sbox},$t4,1),$t4	#$t1
 	movzb	{hi(s3)},{acc0}
-	movzb	({sbox},$t5,1),$t5	#$t2
-	xor	$acc1,$t0
+	movzb	({sbox},$t5,1),$t5	#{t2}
+	xor	{acc1},{t0}
 
 	shr	\$8,$s2
-	movzb	{hi(s0)},$acc1
+	movzb	{hi(s0)},{acc1}
 	shl	\$16,$t4
 	shr	\$8,$s1
 	shl	\$16,$t5
-	xor	$t4,$t1
-	movzb	({sbox},$acc2,1),$acc2	#$t3
-	movzb	({sbox},{acc0},1),{acc0}	#$t0
-	movzb	({sbox},$acc1,1),$acc1	#$t1
+	xor	$t4,{t1}
+	movzb	({sbox},{acc2},1),{acc2}	#$t3
+	movzb	({sbox},{acc0},1),{acc0}	#{t0}
+	movzb	({sbox},{acc1},1),{acc1}	#$t1
 	movzb	({sbox},$s2,1),$s3	#$t3
-	movzb	({sbox},$s1,1),$s2	#$t2
+	movzb	({sbox},$s1,1),$s2	#{t2}
 
-	shl	\$16,$acc2
-	xor	$t5,$t2
+	shl	\$16,{acc2}
+	xor	$t5,{t2}
 	shl	\$24,{acc0}
-	xor	$acc2,$t3
-	shl	\$24,$acc1
-	xor	{acc0},$t0
+	xor	{acc2},{t3}
+	shl	\$24,{acc1}
+	xor	{acc0},{t0}
 	shl	\$24,$s3
-	xor	$acc1,$t1
+	xor	{acc1},{t1}
 	shl	\$24,$s2
-	mov	$t0,$s0
-	mov	$t1,$s1
-	xor	$t2,$s2
-	xor	$t3,$s3
+	mov	{t0},$s0
+	mov	{t1},$s1
+	xor	{t2},$s2
+	xor	{t3},$s3
 '''
 
 def enctransform_ref(sn):
@@ -483,81 +483,81 @@ def enctransform():
     (t3,r20,r21)=(acc2,"%r8d","%r9d");
 
     code += '''
-	mov	\$0x80808080,$t0
-	mov	\$0x80808080,$t1
-	and	$s0,$t0
-	and	$s1,$t1
-	mov	$t0,{acc0}
-	mov	$t1,$acc1
-	shr	\$7,$t0
+	mov	\$0x80808080,{t0}
+	mov	\$0x80808080,{t1}
+	and	$s0,{t0}
+	and	$s1,{t1}
+	mov	{t0},{acc0}
+	mov	{t1},{acc1}
+	shr	$7,{t0}
 	lea	($s0,$s0),$r20
-	shr	\$7,$t1
+	shr	\$7,{t1}
 	lea	($s1,$s1),$r21
-	sub	$t0,{acc0}
-	sub	$t1,$acc1
+	sub	{t0},{acc0}
+	sub	{t1},{acc1}
 	and	\$0xfefefefe,$r20
 	and	\$0xfefefefe,$r21
 	and	\$0x1b1b1b1b,{acc0}
-	and	\$0x1b1b1b1b,$acc1
-	mov	$s0,$t0
-	mov	$s1,$t1
+	and	\$0x1b1b1b1b,{acc1}
+	mov	$s0,{t0}
+	mov	$s1,{t1}
 	xor	{acc0},$r20
-	xor	$acc1,$r21
+	xor	{acc1},$r21
 
 	xor	$r20,$s0
 	xor	$r21,$s1
-	 mov	\$0x80808080,$t2
+	 mov	\$0x80808080,{t2}
 	rol	\$24,$s0
-	 mov	\$0x80808080,$t3
+	 mov	\$0x80808080,{t3}
 	rol	\$24,$s1
-	 and	$s2,$t2
-	 and	$s3,$t3
+	 and	$s2,{t2}
+	 and	$s3,{t3}
 	xor	$r20,$s0
 	xor	$r21,$s1
-	 mov	$t2,{acc0}
-	ror	\$16,$t0
-	 mov	$t3,$acc1
-	ror	\$16,$t1
+	 mov	{t2},{acc0}
+	ror	\$16,{t0}
+	 mov	{t3},{acc1}
+	ror	\$16,{t1}
 	 lea	($s2,$s2),$r20
-	 shr	\$7,$t2
-	xor	$t0,$s0
-	 shr	\$7,$t3
-	xor	$t1,$s1
-	ror	\$8,$t0
+	 shr	\$7,{t2}
+	xor	{t0},$s0
+	 shr	\$7,{t3}
+	xor	{t1},$s1
+	ror	\$8,{t0}
 	 lea	($s3,$s3),$r21
-	ror	\$8,$t1
-	 sub	$t2,{acc0}
-	 sub	$t3,$acc1
-	xor	$t0,$s0
-	xor	$t1,$s1
+	ror	\$8,{t1}
+	 sub	{t2},{acc0}
+	 sub	{t3},{acc1}
+	xor	{t0},$s0
+	xor	{t1},$s1
 
 	and	\$0xfefefefe,$r20
 	and	\$0xfefefefe,$r21
 	and	\$0x1b1b1b1b,{acc0}
-	and	\$0x1b1b1b1b,$acc1
-	mov	$s2,$t2
-	mov	$s3,$t3
+	and	\$0x1b1b1b1b,{acc1}
+	mov	$s2,{t2}
+	mov	$s3,{t3}
 	xor	{acc0},$r20
-	xor	$acc1,$r21
+	xor	{acc1},$r21
 
-	ror	\$16,$t2
+	ror	\$16,{t2}
 	xor	$r20,$s2
-	ror	\$16,$t3
+	ror	\$16,{t3}
 	xor	$r21,$s3
 	rol	\$24,$s2
 	mov	0({sbox}),{acc0}			# prefetch Te4
 	rol	\$24,$s3
 	xor	$r20,$s2
-	mov	64({sbox}),$acc1
+	mov	64({sbox}),{acc1}
 	xor	$r21,$s3
 	mov	128({sbox}),$r20
-	xor	$t2,$s2
-	ror	\$8,$t2
-	xor	$t3,$s3
-	ror	\$8,$t3
-	xor	$t2,$s2
+	xor	{t2},$s2
+	ror	\$8,{t2}
+	xor	{t3},$s3
+	ror	\$8,{t3}
+	xor	{t2},$s2
 	mov	192({sbox}),$r21
-	xor	$t3,$s3
+	xor	{t3},$s3
 '''
 
 code += '''
@@ -566,14 +566,14 @@ code += '''
 _x86_64_AES_encrypt_compact:
 .cfi_startproc
 	lea	128({sbox}),$inp			# size optimization
-	mov	0-128($inp),$acc1		# prefetch Te4
-	mov	32-128($inp),$acc2
-	mov	64-128($inp),$t0
-	mov	96-128($inp),$t1
-	mov	128-128($inp),$acc1
-	mov	160-128($inp),$acc2
-	mov	192-128($inp),$t0
-	mov	224-128($inp),$t1
+	mov	0-128($inp),{acc1}		# prefetch Te4
+	mov	32-128($inp),{acc2}
+	mov	64-128($inp),{t0}
+	mov	96-128($inp),{t1}
+	mov	128-128($inp),{acc1}
+	mov	160-128($inp),{acc2}
+	mov	192-128($inp),{t0}
+	mov	224-128($inp),{t1}
 	jmp	.Lenc_loop_compact
 .align	16
 .Lenc_loop_compact:
@@ -705,57 +705,57 @@ def decvert():
     code += '''
 	# favor 3-way issue Opteron pipeline...
 	movzb	{lo(s0)},{acc0}
-	movzb	{lo(s1)},$acc1
-	movzb	{lo(s2)},$acc2
-	mov	0({sbox},{acc0},8),$t0
-	mov	0({sbox},$acc1,8),$t1
-	mov	0({sbox},$acc2,8),$t2
+	movzb	{lo(s1)},{acc1}
+	movzb	{lo(s2)},{acc2}
+	mov	0({sbox},{acc0},8),{t0}
+	mov	0({sbox},{acc1},8),{t1}
+	mov	0({sbox},{acc2},8),{t2}
 
 	movzb	{hi(s3)},{acc0}
-	movzb	{hi(s0)},$acc1
-	movzb	{lo(s3)},$acc2
-	xor	3({sbox},{acc0},8),$t0
-	xor	3({sbox},$acc1,8),$t1
-	mov	0({sbox},$acc2,8),$t3
+	movzb	{hi(s0)},{acc1}
+	movzb	{lo(s3)},{acc2}
+	xor	3({sbox},{acc0},8),{t0}
+	xor	3({sbox},{acc1},8),{t1}
+	mov	0({sbox},{acc2},8),{t3}
 
 	movzb	{hi(s1)},{acc0}
 	shr	\$16,$s0
-	movzb	{hi(s2)},$acc2
-	xor	3({sbox},{acc0},8),$t2
+	movzb	{hi(s2)},{acc2}
+	xor	3({sbox},{acc0},8),{t2}
 	shr	\$16,$s3
-	xor	3({sbox},$acc2,8),$t3
+	xor	3({sbox},{acc2},8),{t3}
 
 	shr	\$16,$s1
 	lea	16($key),$key
 	shr	\$16,$s2
 
 	movzb	{lo(s2)},{acc0}
-	movzb	{lo(s3)},$acc1
-	movzb	{lo(s0)},$acc2
-	xor	2({sbox},{acc0},8),$t0
-	xor	2({sbox},$acc1,8),$t1
-	xor	2({sbox},$acc2,8),$t2
+	movzb	{lo(s3)},{acc1}
+	movzb	{lo(s0)},{acc2}
+	xor	2({sbox},{acc0},8),{t0}
+	xor	2({sbox},{acc1},8),{t1}
+	xor	2({sbox},{acc2},8),{t2}
 
 	movzb	{hi(s1)},{acc0}
-	movzb	{hi(s2)},$acc1
-	movzb	{lo(s1)},$acc2
-	xor	1({sbox},{acc0},8),$t0
-	xor	1({sbox},$acc1,8),$t1
-	xor	2({sbox},$acc2,8),$t3
+	movzb	{hi(s2)},{acc1}
+	movzb	{lo(s1)},{acc2}
+	xor	1({sbox},{acc0},8),{t0}
+	xor	1({sbox},{acc1},8),{t1}
+	xor	2({sbox},{acc2},8),{t3}
 
 	movzb	{hi(s3)},{acc0}
 	mov	12($key),$s3
-	movzb	{hi(s0)},$acc2
-	xor	1({sbox},{acc0},8),$t2
+	movzb	{hi(s0)},{acc2}
+	xor	1({sbox},{acc0},8),{t2}
 	mov	0($key),$s0
-	xor	1({sbox},$acc2,8),$t3
+	xor	1({sbox},{acc2},8),{t3}
 
-	xor	$t0,$s0
+	xor	{t0},$s0
 	mov	4($key),$s1
 	mov	8($key),$s2
-	xor	$t2,$s2
-	xor	$t1,$s1
-	xor	$t3,$s3
+	xor	{t2},$s2
+	xor	{t1},$s1
+	xor	{t3},$s3
 '''
 
 def declastvert():
@@ -765,89 +765,89 @@ def declastvert():
     code += '''
 	lea	2048({sbox}),{sbox}	# size optimization
 	movzb	{lo(s0)},{acc0}
-	movzb	{lo(s1)},$acc1
-	movzb	{lo(s2)},$acc2
-	movzb	({sbox},{acc0},1),$t0
-	movzb	({sbox},$acc1,1),$t1
-	movzb	({sbox},$acc2,1),$t2
+	movzb	{lo(s1)},{acc1}
+	movzb	{lo(s2)},{acc2}
+	movzb	({sbox},{acc0},1),{t0}
+	movzb	({sbox},{acc1},1),{t1}
+	movzb	({sbox},{acc2},1),{t2}
 
 	movzb	{lo(s3)},{acc0}
-	movzb	{hi(s3)},$acc1
-	movzb	{hi(s0)},$acc2
-	movzb	({sbox},{acc0},1),$t3
-	movzb	({sbox},$acc1,1),$acc1	#$t0
-	movzb	({sbox},$acc2,1),$acc2	#$t1
+	movzb	{hi(s3)},{acc1}
+	movzb	{hi(s0)},{acc2}
+	movzb	({sbox},{acc0},1),{t3}
+	movzb	({sbox},{acc1},1),{acc1}	#{t0}
+	movzb	({sbox},{acc2},1),{acc2}	#$t1
 
-	shl	\$8,$acc1
-	shl	\$8,$acc2
+	shl	\$8,{acc1}
+	shl	\$8,{acc2}
 
-	xor	$acc1,$t0
-	xor	$acc2,$t1
+	xor	{acc1},{t0}
+	xor	{acc2},{t1}
 	shr	\$16,$s3
 
 	movzb	{hi(s1)},{acc0}
-	movzb	{hi(s2)},$acc1
+	movzb	{hi(s2)},{acc1}
 	shr	\$16,$s0
-	movzb	({sbox},{acc0},1),{acc0}	#$t2
-	movzb	({sbox},$acc1,1),$acc1	#$t3
+	movzb	({sbox},{acc0},1),{acc0}	#{t2}
+	movzb	({sbox},{acc1},1),{acc1}	#$t3
 
 	shl	\$8,{acc0}
-	shl	\$8,$acc1
+	shl	\$8,{acc1}
 	shr	\$16,$s1
-	xor	{acc0},$t2
-	xor	$acc1,$t3
+	xor	{acc0},{t2}
+	xor	{acc1},{t3}
 	shr	\$16,$s2
 
 	movzb	{lo(s2)},{acc0}
-	movzb	{lo(s3)},$acc1
-	movzb	{lo(s0)},$acc2
-	movzb	({sbox},{acc0},1),{acc0}	#$t0
-	movzb	({sbox},$acc1,1),$acc1	#$t1
-	movzb	({sbox},$acc2,1),$acc2	#$t2
+	movzb	{lo(s3)},{acc1}
+	movzb	{lo(s0)},{acc2}
+	movzb	({sbox},{acc0},1),{acc0}	#{t0}
+	movzb	({sbox},{acc1},1),{acc1}	#$t1
+	movzb	({sbox},{acc2},1),{acc2}	#{t2}
 
 	shl	\$16,{acc0}
-	shl	\$16,$acc1
-	shl	\$16,$acc2
+	shl	\$16,{acc1}
+	shl	\$16,{acc2}
 
-	xor	{acc0},$t0
-	xor	$acc1,$t1
-	xor	$acc2,$t2
+	xor	{acc0},{t0}
+	xor	{acc1},{t1}
+	xor	{acc2},{t2}
 
 	movzb	{lo(s1)},{acc0}
-	movzb	{hi(s1)},$acc1
-	movzb	{hi(s2)},$acc2
+	movzb	{hi(s1)},{acc1}
+	movzb	{hi(s2)},{acc2}
 	movzb	({sbox},{acc0},1),{acc0}	#$t3
-	movzb	({sbox},$acc1,1),$acc1	#$t0
-	movzb	({sbox},$acc2,1),$acc2	#$t1
+	movzb	({sbox},{acc1},1),{acc1}	#{t0}
+	movzb	({sbox},{acc2},1),{acc2}	#$t1
 
 	shl	\$16,{acc0}
-	shl	\$24,$acc1
-	shl	\$24,$acc2
+	shl	\$24,{acc1}
+	shl	\$24,{acc2}
 
-	xor	{acc0},$t3
-	xor	$acc1,$t0
-	xor	$acc2,$t1
+	xor	{acc0},{t3}
+	xor	{acc1},{t0}
+	xor	{acc2},{t1}
 
 	movzb	{hi(s3)},{acc0}
-	movzb	{hi(s0)},$acc1
+	movzb	{hi(s0)},{acc1}
 	mov	16+12($key),$s3
-	movzb	({sbox},{acc0},1),{acc0}	#$t2
-	movzb	({sbox},$acc1,1),$acc1	#$t3
+	movzb	({sbox},{acc0},1),{acc0}	#{t2}
+	movzb	({sbox},{acc1},1),{acc1}	#$t3
 	mov	16+0($key),$s0
 
 	shl	\$24,{acc0}
-	shl	\$24,$acc1
+	shl	\$24,{acc1}
 
-	xor	{acc0},$t2
-	xor	$acc1,$t3
+	xor	{acc0},{t2}
+	xor	{acc1},{t3}
 
 	mov	16+4($key),$s1
 	mov	16+8($key),$s2
 	lea	-2048({sbox}),{sbox}
-	xor	$t0,$s0
-	xor	$t1,$s1
-	xor	$t2,$s2
-	xor	$t3,$s3
+	xor	{t0},$s0
+	xor	{t1},$s1
+	xor	{t2},$s2
+	xor	{t3},$s3
 '''
 
 
@@ -883,9 +883,9 @@ def decstep(i, *s):
     code+="	xor	1({sbox},$tmp2,8),$out\n";
 
     if i==3:
-        code+="	mov	$t2,$s[1]\n"
-        code+="	mov	$t1,$s[2]\n"
-        code+="	mov	$t0,$s[3]\n"
+        code+="	mov	{t2},$s[1]\n"
+        code+="	mov	{t1},$s[2]\n"
+        code+="	mov	{t0},$s[3]\n"
     code+="\n";
 
 
@@ -928,13 +928,13 @@ def declast(i, *s):
 
     code+="	xor	$tmp0,$out\n";
     if i==3:
-        code+="	mov	$t2,$s[1]\n"		
+        code+="	mov	{t2},$s[1]\n"		
     code+="	xor	$tmp1,$out\n";
     if i==3:
-        code+="	mov	$t1,$s[2]\n"		
+        code+="	mov	{t1},$s[2]\n"		
     code+="	xor	$tmp2,$out\n";
     if i==3:
-        code+="	mov	$t0,$s[3]\n"		
+        code+="	mov	{t0},$s[3]\n"		
     code+="\n";
 
 
@@ -998,74 +998,74 @@ def deccompactvert():
     (t3, t4, t5)=("%r8d","%r9d","%r13d")
 
     code+='''
-	movzb	{lo(s0)},$t0
-	movzb	{lo(s1)},$t1
-	movzb	{lo(s2)},$t2
-	movzb	{lo(s3)},$t3
+	movzb	{lo(s0)},{t0}
+	movzb	{lo(s1)},{t1}
+	movzb	{lo(s2)},{t2}
+	movzb	{lo(s3)},{t3}
 	movzb	{hi(s3)},{acc0}
-	movzb	{hi(s0)},$acc1
+	movzb	{hi(s0)},{acc1}
 	shr	\$16,$s3
-	movzb	{hi(s1)},$acc2
-	movzb	({sbox},$t0,1),$t0
-	movzb	({sbox},$t1,1),$t1
-	movzb	({sbox},$t2,1),$t2
-	movzb	({sbox},$t3,1),$t3
+	movzb	{hi(s1)},{acc2}
+	movzb	({sbox},{t0},1),{t0}
+	movzb	({sbox},{t1},1),{t1}
+	movzb	({sbox},{t2},1),{t2}
+	movzb	({sbox},{t3},1),{t3}
 
-	movzb	({sbox},{acc0},1),$t4	#$t0
+	movzb	({sbox},{acc0},1),$t4	#{t0}
 	movzb	{hi(s2)},{acc0}
-	movzb	({sbox},$acc1,1),$t5	#$t1
-	movzb	({sbox},$acc2,1),$acc2	#$t2
+	movzb	({sbox},{acc1},1),$t5	#{t1}
+	movzb	({sbox},{acc2},1),{acc2}	#{t2}
 	movzb	({sbox},{acc0},1),{acc0}	#$t3
 
 	shr	\$16,$s2
 	shl	\$8,$t5
 	shl	\$8,$t4
-	movzb	{lo(s2)},$acc1
+	movzb	{lo(s2)},{acc1}
 	shr	\$16,$s0
-	xor	$t4,$t0
+	xor	$t4,{t0}
 	shr	\$16,$s1
 	movzb	{lo(s3)},$t4
 
-	shl	\$8,$acc2
-	xor	$t5,$t1
+	shl	\$8,{acc2}
+	xor	$t5,{t1}
 	shl	\$8,{acc0}
 	movzb	{lo(s0)},$t5
-	movzb	({sbox},$acc1,1),$acc1	#$t0
-	xor	$acc2,$t2
-	movzb	{lo(s1)},$acc2
+	movzb	({sbox},{acc1},1),{acc1}	#{t0}
+	xor	{acc2},{t2}
+	movzb	{lo(s1)},{acc2}
 
-	shl	\$16,$acc1
-	xor	{acc0},$t3
+	shl	\$16,{acc1}
+	xor	{acc0},{t3}
 	movzb	({sbox},$t4,1),$t4	#$t1
 	movzb	{hi(s1)},{acc0}
-	movzb	({sbox},$acc2,1),$acc2	#$t3
-	xor	$acc1,$t0
-	movzb	({sbox},$t5,1),$t5	#$t2
-	movzb	{hi(s2)},$acc1
+	movzb	({sbox},{acc2},1),{acc2}	#$t3
+	xor	{acc1},{t0}
+	movzb	({sbox},$t5,1),$t5	#{t2}
+	movzb	{hi(s2)},{acc1}
 
-	shl	\$16,$acc2
+	shl	\$16,{acc2}
 	shl	\$16,$t4
 	shl	\$16,$t5
-	xor	$acc2,$t3
-	movzb	{hi(s3)},$acc2
-	xor	$t4,$t1
+	xor	{acc2},{t3}
+	movzb	{hi(s3)},{acc2}
+	xor	$t4,{t1}
 	shr	\$8,$s0
-	xor	$t5,$t2
+	xor	$t5,{t2}
 
-	movzb	({sbox},{acc0},1),{acc0}	#$t0
-	movzb	({sbox},$acc1,1),$s1	#$t1
-	movzb	({sbox},$acc2,1),$s2	#$t2
+	movzb	({sbox},{acc0},1),{acc0}	#{t0}
+	movzb	({sbox},{acc1},1),$s1	#$t1
+	movzb	({sbox},{acc2},1),$s2	#{t2}
 	movzb	({sbox},$s0,1),$s3	#$t3
 
-	mov	$t0,$s0
+	mov	{t0},$s0
 	shl	\$24,{acc0}
 	shl	\$24,$s1
 	shl	\$24,$s2
 	xor	{acc0},$s0
 	shl	\$24,$s3
-	xor	$t1,$s1
-	xor	$t2,$s2
-	xor	$t3,$s3
+	xor	{t1},$s1
+	xor	{t2},$s2
+	xor	{t3},$s3
 '''
 
 
@@ -1204,14 +1204,14 @@ code+='''
 _x86_64_AES_decrypt_compact:
 .cfi_startproc
 	lea	128({sbox}),$inp			# size optimization
-	mov	0-128($inp),$acc1		# prefetch Td4
-	mov	32-128($inp),$acc2
-	mov	64-128($inp),$t0
-	mov	96-128($inp),$t1
-	mov	128-128($inp),$acc1
-	mov	160-128($inp),$acc2
-	mov	192-128($inp),$t0
-	mov	224-128($inp),$t1
+	mov	0-128($inp),{acc1}		# prefetch Td4
+	mov	32-128($inp),{acc2}
+	mov	64-128($inp),{t0}
+	mov	96-128($inp),{t1}
+	mov	128-128($inp),{acc1}
+	mov	160-128($inp),{acc2}
+	mov	192-128($inp),{t0}
+	mov	224-128($inp),{t1}
 	jmp	.Ldec_loop_compact
 
 .align	16
