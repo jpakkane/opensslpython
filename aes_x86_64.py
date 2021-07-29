@@ -702,7 +702,7 @@ def decvert():
     global code
     t3="%r8d";	# zaps {inp}!
 
-    code += '''
+    code += f'''
 	# favor 3-way issue Opteron pipeline...
 	movzb	{lo(s0)},{acc0}
 	movzb	{lo(s1)},{acc1}
@@ -762,7 +762,7 @@ def declastvert():
     global code
     t3="%r8d";	# zaps {inp}!
 
-    code += '''
+    code += f'''
 	lea	2048({sbox}),{sbox}	# size optimization
 	movzb	{lo(s0)},{acc0}
 	movzb	{lo(s1)},{acc1}
@@ -858,34 +858,34 @@ def decstep(i, *s):
     out=(t0, t1, t2, s[0])[i]
 
     if i!=3:
-        code +="	mov	$s[0],{out}\n"
+        code +=f"	mov	$s[0],{out}\n"
     if i==3:
         tmp1=s[2]
     if i!=3:
-        code+="	mov	$s[2],$tmp1\n"		
-    code+="	and	$0xFF,{out}\n";
+        code+=f"	mov	$s[2],$tmp1\n"		
+    code+=f"	and	$0xFF,{out}\n";
 
-    code+="	mov	0({sbox},{out},8),{out}\n";
-    code+="	shr	$16,$tmp1\n";
+    code+=f"	mov	0({sbox},{out},8),{out}\n";
+    code+=f"	shr	$16,$tmp1\n";
     if i==3:
         tmp2=s[3]
     if i!=3:
-        code+="	mov	$s[3],$tmp2\n"		
+        code+=f"	mov	$s[3],$tmp2\n"		
 
     if i==3:
         tmp0=s[1]			
-    code+="	movzb	"+hi(s[1])+",$tmp0\n";
-    code+="	and	$0xFF,$tmp1\n";
-    code+="	shr	$24,$tmp2\n";
+    code+=f"	movzb	"+hi(s[1])+",$tmp0\n";
+    code+=f"	and	$0xFF,$tmp1\n";
+    code+=f"	shr	$24,$tmp2\n";
 
-    code+="	xor	3({sbox},$tmp0,8),{out}\n";
-    code+="	xor	2({sbox},$tmp1,8),{out}\n";
-    code+="	xor	1({sbox},$tmp2,8),{out}\n";
+    code+=f"	xor	3({sbox},$tmp0,8),{out}\n";
+    code+=f"	xor	2({sbox},$tmp1,8),{out}\n";
+    code+=f"	xor	1({sbox},$tmp2,8),{out}\n";
 
     if i==3:
-        code+="	mov	{t2},$s[1]\n"
-        code+="	mov	{t1},$s[2]\n"
-        code+="	mov	{t0},$s[3]\n"
+        code+="f	mov	{t2},$s[1]\n"
+        code+="f	mov	{t1},$s[2]\n"
+        code+="f	mov	{t0},$s[3]\n"
     code+="\n";
 
 
@@ -897,44 +897,44 @@ def declast(i, *s):
     out=(t0,t1,t2,s[0])[i];
 
     if i!=3:
-        code+="	mov	$s[0],{out}\n"
+        code+=f"	mov	$s[0],{out}\n"
     else:
         tmp1=s[2]			;
     if i!=3:
-        code+="	mov	$s[2],$tmp1\n"
+        code+=f"	mov	$s[2],$tmp1\n"
         
-    code+="	and	$0xFF,{out}\n";
+    code+=f"	and	$0xFF,{out}\n";
 
-    code+="	movzb	2048({sbox},{out},1),{out}\n";
-    code+="	shr	$16,$tmp1\n";
+    code+=f"	movzb	2048({sbox},{out},1),{out}\n";
+    code+=f"	shr	$16,$tmp1\n";
     if i==3:
         tmp2=s[3]			
     else:
-        code+="	mov	$s[3],$tmp2\n"
+        code+=f"	mov	$s[3],$tmp2\n"
 
     if i==3:
         tmp0=s[1]			
-    code+="	movzb	" + hi(s[1]) + ",$tmp0\n";
-    code+="	and	$0xFF,$tmp1\n";
-    code+="	shr	$24,$tmp2\n";
+    code+=f"	movzb	" + hi(s[1]) + ",$tmp0\n";
+    code+=f"	and	$0xFF,$tmp1\n";
+    code+=f"	shr	$24,$tmp2\n";
     
-    code+="	movzb	2048({sbox},$tmp0,1),$tmp0\n";
-    code+="	movzb	2048({sbox},$tmp1,1),$tmp1\n";
-    code+="	movzb	2048({sbox},$tmp2,1),$tmp2\n";
+    code+=f"	movzb	2048({sbox},$tmp0,1),$tmp0\n";
+    code+=f"	movzb	2048({sbox},$tmp1,1),$tmp1\n";
+    code+=f"	movzb	2048({sbox},$tmp2,1),$tmp2\n";
 
-    code+="	shl	$8,$tmp0\n";
-    code+="	shl	$16,$tmp1\n";
-    code+="	shl	$24,$tmp2\n";
+    code+=f"	shl	$8,$tmp0\n";
+    code+=f"	shl	$16,$tmp1\n";
+    code+=f"	shl	$24,$tmp2\n";
 
-    code+="	xor	$tmp0,{out}\n";
+    code+=f"	xor	$tmp0,{out}\n";
     if i==3:
-        code+="	mov	{t2},$s[1]\n"		
-    code+="	xor	$tmp1,{out}\n";
+        code+=f"	mov	{t2},$s[1]\n"		
+    code+=f"	xor	$tmp1,{out}\n";
     if i==3:
-        code+="	mov	{t1},$s[2]\n"		
-    code+="	xor	$tmp2,{out}\n";
+        code+=f"	mov	{t1},$s[2]\n"		
+    code+=f"	xor	$tmp2,{out}\n";
     if i==3:
-        code+="	mov	{t0},$s[3]\n"		
+        code+=f"	mov	{t0},$s[3]\n"		
     code+="\n";
 
 
@@ -1077,122 +1077,122 @@ def dectransform(prefetch):
     (tp10, tp20, tp40, tp80, acc0)=("%rax","%r8", "%r9", "%r10","%rbx")
     (tp18, tp28, tp48, tp88, acc8)=("%rcx","%r11","%r12","%r13","%rdx")
 
-    code+='''
-	mov	$mask80,$tp40
-	mov	$mask80,$tp48
-	and	$tp10,$tp40
-	and	$tp18,$tp48
-	mov	$tp40,{acc0}
-	mov	$tp48,$acc8
-	shr	$7,$tp40
-	lea	($tp10,$tp10),$tp20
-	shr	$7,$tp48
-	lea	($tp18,$tp18),$tp28
-	sub	$tp40,{acc0}
-	sub	$tp48,$acc8
-	and	$maskfe,$tp20
-	and	$maskfe,$tp28
-	and	$mask1b,{acc0}
-	and	$mask1b,$acc8
-	xor	{acc0},$tp20
-	xor	$acc8,$tp28
-	mov	$mask80,$tp80
-	mov	$mask80,$tp88
+    code+=f'''
+	mov	{mask80},{tp40}
+	mov	{mask80},{tp48}
+	and	{tp10},{tp40}
+	and	{tp18},{tp48}
+	mov	{tp40},{acc0}
+	mov	{tp48},{acc8}
+	shr	$7,{tp40}
+	lea	({tp10},{tp10}),{tp20}
+	shr	$7,{tp48}
+	lea	({tp18},{tp18}),{tp28}
+	sub	{tp40},{acc0}
+	sub	{tp48},{acc8}
+	and	{maskfe},{tp20}
+	and	{maskfe},{tp28}
+	and	{mask1b},{acc0}
+	and	{mask1b},{acc8}
+	xor	{acc0},{tp20}
+	xor	{acc8},{tp28}
+	mov	{mask80},{tp80}
+	mov	{mask80},{tp88}
 
-	and	$tp20,$tp80
-	and	$tp28,$tp88
-	mov	$tp80,{acc0}
-	mov	$tp88,$acc8
-	shr	$7,$tp80
-	lea	($tp20,$tp20),$tp40
-	shr	$7,$tp88
-	lea	($tp28,$tp28),$tp48
-	sub	$tp80,{acc0}
-	sub	$tp88,$acc8
-	and	$maskfe,$tp40
-	and	$maskfe,$tp48
-	and	$mask1b,{acc0}
-	and	$mask1b,$acc8
-	xor	{acc0},$tp40
-	xor	$acc8,$tp48
-	mov	$mask80,$tp80
-	mov	$mask80,$tp88
+	and	{tp20},{tp80}
+	and	{tp28},{tp88}
+	mov	{tp80},{acc0}
+	mov	{tp88},{acc8}
+	shr	$7,{tp80}
+	lea	({tp20},{tp20}),{tp40}
+	shr	$7,{tp88}
+	lea	({tp28},{tp28}),{tp48}
+	sub	{tp80},{acc0}
+	sub	{tp88},{acc8}
+	and	{maskfe},{tp40}
+	and	{maskfe},{tp48}
+	and	{mask1b},{acc0}
+	and	{mask1b},{acc8}
+	xor	{acc0},{tp40}
+	xor	{acc8},{tp48}
+	mov	{mask80},{tp80}
+	mov	{mask80},{tp88}
 
-	and	$tp40,$tp80
-	and	$tp48,$tp88
-	mov	$tp80,{acc0}
-	mov	$tp88,$acc8
-	shr	$7,$tp80
-	 xor	$tp10,$tp20		# tp2^=tp1
-	shr	$7,$tp88
-	 xor	$tp18,$tp28		# tp2^=tp1
-	sub	$tp80,{acc0}
-	sub	$tp88,$acc8
-	lea	($tp40,$tp40),$tp80
-	lea	($tp48,$tp48),$tp88
-	 xor	$tp10,$tp40		# tp4^=tp1
-	 xor	$tp18,$tp48		# tp4^=tp1
-	and	$maskfe,$tp80
-	and	$maskfe,$tp88
-	and	$mask1b,{acc0}
-	and	$mask1b,$acc8
-	xor	{acc0},$tp80
-	xor	$acc8,$tp88
+	and	{tp40},{tp80}
+	and	{tp48},{tp88}
+	mov	{tp80},{acc0}
+	mov	{tp88},{acc8}
+	shr	$7,{tp80}
+	 xor	{tp10},{tp20}		# tp2^=tp1
+	shr	$7,{tp88}
+	 xor	{tp18},{tp28}		# tp2^=tp1
+	sub	{tp80},{acc0}
+	sub	{tp88},{acc8}
+	lea	({tp40},{tp40}),{tp80}
+	lea	({tp48},{tp48}),{tp88}
+	 xor	{tp10},{tp40}		# tp4^=tp1
+	 xor	{tp18},{tp48}		# tp4^=tp1
+	and	{maskfe},{tp80}
+	and	{maskfe},{tp88}
+	and	{mask1b},{acc0}
+	and	{mask1b},{acc8}
+	xor	{acc0},{tp80}
+	xor	{acc8},{tp88}
 
-	xor	$tp80,$tp10		# tp1^=tp8
-	xor	$tp88,$tp18		# tp1^=tp8
-	xor	$tp80,$tp20		# tp2^tp1^=tp8
-	xor	$tp88,$tp28		# tp2^tp1^=tp8
-	mov	$tp10,{acc0}
-	mov	$tp18,$acc8
-	xor	$tp80,$tp40		# tp4^tp1^=tp8
+	xor	{tp80},{tp10}		# tp1^=tp8
+	xor	{tp88},{tp18}		# tp1^=tp8
+	xor	{tp80},{tp20}		# tp2^tp1^=tp8
+	xor	{tp88},{tp28}		# tp2^tp1^=tp8
+	mov	{tp10},{acc0}
+	mov	{tp18},{acc8}
+	xor	{tp80},{tp40}		# tp4^tp1^=tp8
 	shr	$32,{acc0}
-	xor	$tp88,$tp48		# tp4^tp1^=tp8
-	shr	$32,$acc8
-	xor	$tp20,$tp80		# tp8^=tp8^tp2^tp1=tp2^tp1
+	xor	{tp88},{tp48}		# tp4^tp1^=tp8
+	shr	$32,{acc8}
+	xor	{tp20},{tp80}		# tp8^=tp8^tp2^tp1=tp2^tp1
 	rol	$8,{LO(tp10)}	# ROTATE(tp1^tp8,8)
-	xor	$tp28,$tp88		# tp8^=tp8^tp2^tp1=tp2^tp1
+	xor	{tp28},{tp88}		# tp8^=tp8^tp2^tp1=tp2^tp1
 	rol	$8,{LO(tp18)}	# ROTATE(tp1^tp8,8)
-	xor	$tp40,$tp80		# tp2^tp1^=tp8^tp4^tp1=tp8^tp4^tp2
+	xor	{tp40},{tp80}		# tp2^tp1^=tp8^tp4^tp1=tp8^tp4^tp2
 	rol	$8,{LO(acc0)}	# ROTATE(tp1^tp8,8)
-	xor	$tp48,$tp88		# tp2^tp1^=tp8^tp4^tp1=tp8^tp4^tp2
+	xor	{tp48},{tp88}		# tp2^tp1^=tp8^tp4^tp1=tp8^tp4^tp2
 
 	rol	$8,{LO(acc8)}	# ROTATE(tp1^tp8,8)
 	xor	{LO(tp80)},{LO(tp10)}
-	shr	$32,$tp80
+	shr	$32,{tp80}
 	xor	{LO(tp88)},{LO(tp18)}
-	shr	$32,$tp88
+	shr	$32,{tp88}
 	xor	{LO(tp80)},{LO(acc0)}
 	xor	{LO(tp88)},{LO(acc8)}
 
-	mov	$tp20,$tp80
+	mov	{tp20},{tp80}
 	rol	$24,{LO(tp20)}	# ROTATE(tp2^tp1^tp8,24)
-	mov	$tp28,$tp88
+	mov	{tp28},{tp88}
 	rol	$24,{LO(tp28)}	# ROTATE(tp2^tp1^tp8,24)
-	shr	$32,$tp80
+	shr	$32,{tp80}
 	xor	{LO(tp20)},{LO(tp10)}
-	shr	$32,$tp88
+	shr	$32,{tp88}
 	xor	{LO(tp28)},{LO(tp18)}
 	rol	$24,{LO(tp80)}	# ROTATE(tp2^tp1^tp8,24)
-	mov	$tp40,$tp20
+	mov	{tp40},{tp20}
 	rol	$24,{LO(tp88)}	# ROTATE(tp2^tp1^tp8,24)
-	mov	$tp48,$tp28
-	shr	$32,$tp20
+	mov	{tp48},{tp28}
+	shr	$32,{tp20}
 	xor	{LO(tp80)},{LO(acc0)}
-	shr	$32,$tp28
+	shr	$32,{tp28}
 	xor	{LO(tp88)},{LO(acc8)}
 
-	`"mov	0({sbox}),$mask80"	if ($prefetch)`
+	`"mov	0({sbox}),{mask80}"	if ($prefetch)`
 	rol	$16,{LO(tp40)}	# ROTATE(tp4^tp1^tp8,16)
-	`"mov	64({sbox}),$maskfe"	if ($prefetch)`
+	`"mov	64({sbox}),{maskfe}"	if ($prefetch)`
 	rol	$16,{LO(tp48)}	# ROTATE(tp4^tp1^tp8,16)
-	`"mov	128({sbox}),$mask1b"	if ($prefetch)`
+	`"mov	128({sbox}),{mask1b}"	if ($prefetch)`
 	rol	$16,{LO(tp20)}	# ROTATE(tp4^tp1^tp8,16)
-	`"mov	192({sbox}),$tp80"	if ($prefetch)`
+	`"mov	192({sbox}),{tp80}"	if ($prefetch)`
 	xor	{LO(tp40)},{LO(tp10)}
 	rol	$16,{LO(tp28)}	# ROTATE(tp4^tp1^tp8,16)
 	xor	{LO(tp48)},{LO(tp18)}
-	`"mov	256({sbox}),$tp88"	if ($prefetch)`
+	`"mov	256({sbox}),{tp88}"	if ($prefetch)`
 	xor	{LO(tp20)},{LO(acc0)}
 	xor	{LO(tp28)},{LO(acc8)}
 '''
@@ -1227,13 +1227,13 @@ code += f'''
 		cmp	16(%rsp),{key}
 		je	.Ldec_compact_done
 
-		mov	256+0({sbox}),$mask80
+		mov	256+0({sbox}),{mask80}
 		shl	$32,%rbx
 		shl	$32,%rdx
-		mov	256+8({sbox}),$maskfe
+		mov	256+8({sbox}),{maskfe}
 		or	%rbx,%rax
 		or	%rdx,%rcx
-		mov	256+16({sbox}),$mask1b
+		mov	256+16({sbox}),{mask1b}
 '''
 dectransform(1)
 code += f'''
@@ -1707,9 +1707,9 @@ AES_set_decrypt_key:
 
 	lea	.LAES_Te+2048+1024(%rip),%rax	# rcon
 
-	mov	40(%rax),$mask80
-	mov	48(%rax),$maskfe
-	mov	56(%rax),$mask1b
+	mov	40(%rax),{mask80}
+	mov	48(%rax),{maskfe}
+	mov	56(%rax),{mask1b}
 
 	mov	%r8,{key}
 	sub	$1,%r14d
